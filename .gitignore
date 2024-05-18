@@ -1,0 +1,47 @@
+# python cache
+backend/__pycache__
+backend/.mypy_cache
+backend/.pytest_cache
+
+# venv
+backend/venv
+backend/.env
+
+# IDE
+backend/.idea
+backend/.vscode
+
+# Logs
+frontend/logs
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+frontend/node_modules
+frontend/.DS_Store
+frontend/dist
+frontend/dist-ssr
+frontend/coverage
+frontend/*.local
+
+frontend/cypress/videos/
+frontend/cypress/screenshots/
+frontend/
+# Editor directories and files
+frontend/.vscode/*
+frontend/!.vscode/extensions.json
+frontend/.idea
+frontend/*.suo
+frontend/*.ntvs*
+frontend/*.njsproj
+frontend/*.sln
+frontend/*.sw?
+
+frontend/*.tsbuildinfo
+
+3x-ui
+postgres/postgres
+postgres/pgadmin
