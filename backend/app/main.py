@@ -17,6 +17,8 @@ from .admin.views import UserAdmin, InboundAdmin
 from .database import get_db, engine
 from .admin.admin import authentication_backend
 
+from .jobs.my_jobs import scheduler
+
 
 app = FastAPI()
 
@@ -36,6 +38,7 @@ app.add_middleware(
 )
 app.include_router(users.router)
 app.include_router(inbounds.router)
+scheduler.start()
 
 
 @app.post("/login")
