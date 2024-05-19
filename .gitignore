@@ -1,5 +1,6 @@
 # python cache
 backend/__pycache__
+backend/*/__pycache__
 backend/.mypy_cache
 backend/.pytest_cache
 
