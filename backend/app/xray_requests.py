@@ -28,14 +28,13 @@ async def get_token(username, host, password):
 async def get_inbound_protocol(session, host, inbound_id):
     result = ""
     tries = 0
-    url = f"{host}panel/api/inbounds/get/{inbound_id}"
+    url = f"{host}/panel/api/inbounds/get/{inbound_id}"
     print(url)
     while not result and tries < API_TRIES:
         async with AsyncClient(cookies={"session": session}) as client:
             try:
                 response = await client.get(url, timeout=BACK_OFF)
-                result = response
-                result = (json.loads(result.text)['obj']['protocol'])
+                result = (json.loads(response.text)['obj']['protocol'])
             except Exception as e:
                 print(str(e))
                 tries += 1

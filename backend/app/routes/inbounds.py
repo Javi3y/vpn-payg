@@ -28,7 +28,8 @@ async def create_inbound(
         inbound.username, inbound.host, inbound.password
     )
 
-    if not new_inbound_data['protocol']:
+    if not new_inbound_data['protocol'] == "vless" or "trojan":
+        print(new_inbound_data['protocol'])
         new_inbound_data["protocol"] = await get_inbound_protocol(
             new_inbound_data["session_token"], inbound.host, inbound.inbound_id
         )
