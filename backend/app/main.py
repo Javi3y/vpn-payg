@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .auth import create_access_token
 
 from . import models
-from .routes import users
+from .routes import users, inbounds
 
 from sqlalchemy.orm import Session
 from starlette.status import (
@@ -35,6 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(users.router)
+app.include_router(inbounds.router)
 
 
 @app.post("/login")

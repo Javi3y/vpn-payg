@@ -1,7 +1,7 @@
 from sqlalchemy.orm import  validates
 from .database import Base
 from sqlalchemy import TIMESTAMP, Boolean, Column, Float, Integer, String
-from sqlalchemy_utils import EmailType, PasswordType, URLType, UUIDType
+from sqlalchemy_utils import ChoiceType, EmailType, PasswordType, URLType, UUIDType
 from sqlalchemy.sql.expression import text
 
 
@@ -43,6 +43,11 @@ class User(Base):
 
 
 class Inbound(Base):
+    PROTOCOLS = [
+        ('vless', 'vless'),
+        ('trojan', 'trojan')
+    ]
+
     __tablename__ = "inbounds"
     id = Column(Integer, nullable=False, primary_key=True)
     username = Column(String, nullable=False)
@@ -51,6 +56,8 @@ class Inbound(Base):
     inbound_id = Column(Integer, nullable=False)
     session_token = Column(String, nullable=False)
     price = Column(Integer, nullable=False)
+    protocol = Column(ChoiceType(PROTOCOLS))
+    detail = Column(String, nullable=False, server_default=" ")
 
 
 # class Vote(Base):

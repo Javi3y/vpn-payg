@@ -40,11 +40,11 @@ class UserConverter(ModelConverter):
         kwargs["validators"].extend(extra_validators)
         return StringField(**kwargs)
 
-    @converts("sqlalchemy.sql.sqltypes.String")  
-    def conv_string(
-        self, model: type, prop: ColumnProperty, kwargs: Dict[str, Any]
-    ) -> UnboundField:
-        extra_validators = self._string_common(prop)
-        kwargs.setdefault("validators", [])
-        kwargs["validators"].extend(extra_validators)
-        return StringField(**kwargs)
+    #@converts("sqlalchemy.sql.sqltypes.String")  
+    #def conv_string(
+    #    self, model: type, prop: ColumnProperty, kwargs: Dict[str, Any]
+    #) -> UnboundField:
+    #    extra_validators = self._string_common(prop)
+    #    kwargs.setdefault("validators", [])
+    #    kwargs["validators"].extend(extra_validators)
+    #    return StringField(**kwargs)
