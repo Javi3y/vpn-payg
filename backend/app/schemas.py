@@ -56,7 +56,7 @@ class Inbound(BaseModel):
 class InboundIn(Inbound):
     username: str
     password: str
-    host: HttpUrl
+    host: str
     inbound_id: int
     protocol: Optional[str]
 

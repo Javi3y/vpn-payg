@@ -1,8 +1,8 @@
-import asyncio
+from typing import List
 from fastapi import APIRouter
 from app import models, schemas
 from app.auth import get_current_user
-from app.database import get_db, object_as_dict
+from app.database import get_db
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.xray_requests import get_inbound_protocol, get_token
@@ -24,16 +24,21 @@ async def create_inbound(
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED, detail="should be supper user"
         )
-    if not new_inbound_data['protocol']:
-        new_inbound_data["session_token"] = await get_token(
-            inbound.username, inbound.host, inbound.password
-        )
-
-    new_inbound_data["protocol"] = await get_inbound_protocol(
-        new_inbound_data["session_token"], inbound.host, inbound.inbound_id
+    new_inbound_data["session_token"] = await get_token(
+        inbound.username, inbound.host, inbound.password
     )
+
+    if not new_inbound_data['protocol']:
+        new_inbound_data["protocol"] = await get_inbound_protocol(
+            new_inbound_data["session_token"], inbound.host, inbound.inbound_id
+        )
     new_inbound = models.Inbound(**new_inbound_data)
     db.add(new_inbound)
     db.commit()
     db.refresh(new_inbound)
     return new_inbound
+
+@router.get("/", response_model=List[schemas.InboundOut])
+async def get_inbounds(db:Session = Depends(get_db)):
+    return db.query(models.Inbound).all()
+

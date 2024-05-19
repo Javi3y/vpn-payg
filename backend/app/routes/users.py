@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from app import models, schemas
 from app.auth import get_current_user
-from app.database import get_db, object_as_dict
+from app.database import get_db
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette.status import (
