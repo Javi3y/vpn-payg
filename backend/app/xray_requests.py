@@ -1,6 +1,9 @@
 import asyncio
+from fastapi import HTTPException
 from httpx import AsyncClient
 import json
+
+from starlette.status import HTTP_400_BAD_REQUEST
 
 
 API_TRIES = 5
@@ -83,17 +86,20 @@ async def create_inbound_client(
                     }
                 clients = str(clients).replace("'", '"')
                 headers = {"id": inbound_id, "settings": clients}
-                print(headers)
                 response = await client.post(
                     host + "/panel/api/inbounds/addClient",
                     json=headers,
                     timeout=BACK_OFF,
                 )
-                print(response)
+                if not json.loads(response.text)['success']:
+                   raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=json.loads(response.text))
+                
                 result = response.text
             except Exception as e:
                 print(str(e))
-                tries += 1
+                tries += 1 
+                if tries >= API_TRIES:
+                    raise e
     return result
 
 
