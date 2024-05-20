@@ -15,12 +15,12 @@ class AdminAuth(AuthenticationBackend):
         db_generator = get_db()
         db = await anext(db_generator)
         username, password = form["username"], form["password"]
-        user = await db.execute(select(models.User).where(models.User.email==username))
+        user = await db.execute(
+            select(models.User).where(models.User.email == username)
+        )
         user = user.scalar()
         if not user:
-            raise HTTPException(
-                status_code=HTTP_404_NOT_FOUND, detail="no such user"
-            )
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="no such user")
             return False
         if not (user.is_supper_user):
             raise HTTPException(
@@ -36,7 +36,9 @@ class AdminAuth(AuthenticationBackend):
         # Validate username/password credentials
 
         # And update session
-        request.session.update({"token": await create_access_token({"user_id": user.id})})
+        request.session.update(
+            {"token": await create_access_token({"user_id": user.id})}
+        )
 
         return True
 
@@ -60,9 +62,10 @@ class AdminAuth(AuthenticationBackend):
         user_token = await verity_access_token(token, credentials_exception)
         db_generator = get_db()
         db = await anext(db_generator)
-        user = await db.execute(select(models.User).where(models.User.id==user_token.id))
+        user = await db.execute(
+            select(models.User).where(models.User.id == user_token.id)
+        )
         is_supper_user = user = user.scalar().is_supper_user
-        
 
         if user_token and is_supper_user:
             return True

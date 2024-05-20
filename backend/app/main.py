@@ -47,7 +47,9 @@ async def login(
     user_credentials: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
-    results = await db.execute(select(models.User).where(models.User.email==user_credentials.username))
+    results = await db.execute(
+        select(models.User).where(models.User.email == user_credentials.username)
+    )
     user = results.scalar()
     if not user or not user_credentials.password == user.password:
         raise HTTPException(

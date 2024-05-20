@@ -1,6 +1,6 @@
 from sqlalchemy.orm import validates
 from .database import Base
-from sqlalchemy import TIMESTAMP, Boolean, Column, Float, ForeignKey, Integer, String
+from sqlalchemy import TIMESTAMP, Boolean, Column, Float, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy_utils import ChoiceType, EmailType, PasswordType, URLType, UUIDType
 from sqlalchemy.sql.expression import text
 
@@ -41,6 +41,8 @@ class Inbound(Base):
     price = Column(Integer, nullable=False)
     protocol = Column(ChoiceType(PROTOCOLS))
     detail = Column(String, nullable=False, server_default=" ")
+    base_link = Column(String, nullable=False)
+    __table_args__ = (UniqueConstraint('host', 'inbound_id', name='_host_location_uc'),)
 
 
 class Client(Base):

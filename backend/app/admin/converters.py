@@ -1,10 +1,10 @@
-
 from typing import Callable, Protocol, Any, Dict, TypeVar, no_type_check
 from sqladmin._types import MODEL_PROPERTY
 from wtforms.fields.core import UnboundField
-from wtforms import StringField 
+from wtforms import StringField
 from sqladmin.forms import ModelConverter
 from sqlalchemy.orm import ColumnProperty
+
 
 class ConverterCallable(Protocol):
     def __call__(
@@ -30,8 +30,9 @@ def converts(*args: str) -> Callable[[T_CC], T_CC]:
 
     return _inner
 
+
 class UserConverter(ModelConverter):
-    @converts("sqlalchemy_utils.types.password.PasswordType")  
+    @converts("sqlalchemy_utils.types.password.PasswordType")
     def conv_password(
         self, model: type, prop: ColumnProperty, kwargs: Dict[str, Any]
     ) -> UnboundField:
@@ -40,10 +41,10 @@ class UserConverter(ModelConverter):
         kwargs["validators"].extend(extra_validators)
         return StringField(**kwargs)
 
-    #@converts("sqlalchemy.sql.sqltypes.String")  
-    #def conv_string(
+    # @converts("sqlalchemy.sql.sqltypes.String")
+    # def conv_string(
     #    self, model: type, prop: ColumnProperty, kwargs: Dict[str, Any]
-    #) -> UnboundField:
+    # ) -> UnboundField:
     #    extra_validators = self._string_common(prop)
     #    kwargs.setdefault("validators", [])
     #    kwargs["validators"].extend(extra_validators)

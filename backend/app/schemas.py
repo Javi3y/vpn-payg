@@ -39,19 +39,24 @@ class UserOut(User):
 class UserLogin(User):
     password: str
 
-#inbound
+
+# inbound
 class ProtocolEnum(str, Enum):
-    vless = 'vless'
-    trojan = 'trojan'
+    vless = "vless"
+    trojan = "trojan"
+
 
 class Protocol(BaseModel):
-    value:str
+    value: str
+
 
 class Inbound(BaseModel):
     price: int
     detail: str
+
     class Config:
         from_attributes = True
+
 
 class InboundIn(Inbound):
     username: str
@@ -59,6 +64,7 @@ class InboundIn(Inbound):
     host: str
     inbound_id: int
     protocol: Optional[str]
+
 
 class InboundOut(Inbound):
     protocol: Protocol

@@ -19,6 +19,7 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     await db.refresh(new_user)
     return {"user": new_user.email}
 
-@router.get("/profile",response_model=schemas.UserOut)
+
+@router.get("/profile", response_model=schemas.UserOut)
 async def get_profile(current_user: int = Depends(get_current_user)):
     return current_user

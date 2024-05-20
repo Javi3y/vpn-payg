@@ -29,7 +29,7 @@ async def create_inbound(
         inbound.username, inbound.host, inbound.password
     )
 
-    if not new_inbound_data['protocol'] == "vless" or "trojan":
+    if not new_inbound_data["protocol"] == "vless" or "trojan":
         new_inbound_data["protocol"] = await get_inbound_protocol(
             new_inbound_data["session_token"], inbound.host, inbound.inbound_id
         )
@@ -39,7 +39,8 @@ async def create_inbound(
     await db.refresh(new_inbound)
     return new_inbound
 
+
 @router.get("/", response_model=List[schemas.InboundOut])
-async def get_inbounds(db:Session = Depends(get_db)):
+async def get_inbounds(db: Session = Depends(get_db)):
     results = await db.execute(select(models.Inbound))
     return results.scalars().all()

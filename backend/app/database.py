@@ -7,17 +7,17 @@ from .config import settings
 
 SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{settings.database_username}:{settings.database_password}@{settings.database_host}:{settings.database_port}/{settings.database_name}"
 
-#engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# engine = create_engine(SQLALCHEMY_DATABASE_URL)
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 
-#SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 Base = declarative_base()
 
 
-#def get_db():
+# def get_db():
 #
 #    db = SessionLocal()
 #    try:
@@ -32,5 +32,5 @@ async def get_db():
         await db.close()
 
 
-#def object_as_dict(obj):
+# def object_as_dict(obj):
 #    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
