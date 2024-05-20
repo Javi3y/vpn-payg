@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import APIRouter
+from sqlalchemy import select
 from app import models, schemas
 from app.auth import get_current_user
 from app.database import get_db
@@ -34,11 +35,11 @@ async def create_inbound(
         )
     new_inbound = models.Inbound(**new_inbound_data)
     db.add(new_inbound)
-    db.commit()
-    db.refresh(new_inbound)
+    await db.commit()
+    await db.refresh(new_inbound)
     return new_inbound
 
 @router.get("/", response_model=List[schemas.InboundOut])
 async def get_inbounds(db:Session = Depends(get_db)):
-    return db.query(models.Inbound).all()
-
+    results = await db.execute(select(models.Inbound))
+    return results.scalars().all()

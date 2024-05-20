@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException, BackgroundTasks
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import select
 from .auth import create_access_token
 
 from . import models
@@ -46,12 +47,12 @@ async def login(
     user_credentials: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
-    user = db.query(models.User).filter_by(email=user_credentials.username).first()
-
+    results = await db.execute(select(models.User).where(models.User.email==user_credentials.username))
+    user = results.scalar()
     if not user or not user_credentials.password == user.password:
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED, detail="invalid credentails"
         )
-    access_token = create_access_token(data={"user_id": user.id})
+    access_token = await create_access_token(data={"user_id": user.id})
 
     return {"access_token": access_token, "token_type": "bearer"}

@@ -1,5 +1,6 @@
 from sqladmin.authentication import AuthenticationBackend
 from fastapi import HTTPException, Request, status
+from sqlalchemy import select
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 
 from app.database import get_db
@@ -12,9 +13,10 @@ class AdminAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
         form = await request.form()
         db_generator = get_db()
-        db = next(db_generator)
+        db = await anext(db_generator)
         username, password = form["username"], form["password"]
-        user = db.query(models.User).filter_by(email=username).first()
+        user = await db.execute(select(models.User).where(models.User.email==username))
+        user = user.scalar()
         if not user:
             raise HTTPException(
                 status_code=HTTP_404_NOT_FOUND, detail="no such user"
@@ -34,7 +36,7 @@ class AdminAuth(AuthenticationBackend):
         # Validate username/password credentials
 
         # And update session
-        request.session.update({"token": create_access_token({"user_id": user.id})})
+        request.session.update({"token": await create_access_token({"user_id": user.id})})
 
         return True
 
@@ -55,12 +57,12 @@ class AdminAuth(AuthenticationBackend):
             headers={"www-Authenticate": "Bearer"},
         )
 
-        user_token = verity_access_token(token, credentials_exception)
+        user_token = await verity_access_token(token, credentials_exception)
         db_generator = get_db()
-        db = next(db_generator)
-        is_supper_user = (
-            db.query(models.User).filter_by(id=user_token.id).first().is_supper_user
-        )
+        db = await anext(db_generator)
+        user = await db.execute(select(models.User).where(models.User.id==user_token.id))
+        is_supper_user = user = user.scalar().is_supper_user
+        
 
         if user_token and is_supper_user:
             return True
