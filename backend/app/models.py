@@ -1,22 +1,8 @@
-from sqlalchemy.orm import  validates
+from sqlalchemy.orm import validates
 from .database import Base
-from sqlalchemy import TIMESTAMP, Boolean, Column, Float, Integer, String
+from sqlalchemy import TIMESTAMP, Boolean, Column, Float, ForeignKey, Integer, String
 from sqlalchemy_utils import ChoiceType, EmailType, PasswordType, URLType, UUIDType
 from sqlalchemy.sql.expression import text
-
-
-# class Post(Base):
-#    __tablename__ = "posts"
-#
-#    id = Column(Integer, primary_key=True, nullable=False)
-#    title = Column(String, nullable=False)
-#    content = Column(String, nullable=False)
-#    published = Column(Boolean, nullable=True)
-#    owner_id = Column(
-#        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-#    )
-#
-#    owner = relationship("User")
 
 
 class User(Base):
@@ -43,10 +29,7 @@ class User(Base):
 
 
 class Inbound(Base):
-    PROTOCOLS = [
-        ('vless', 'vless'),
-        ('trojan', 'trojan')
-    ]
+    PROTOCOLS = [("vless", "vless"), ("trojan", "trojan")]
 
     __tablename__ = "inbounds"
     id = Column(Integer, nullable=False, primary_key=True)
@@ -60,18 +43,10 @@ class Inbound(Base):
     detail = Column(String, nullable=False, server_default=" ")
 
 
-# class Vote(Base):
-#    __tablename__ = "votes"
-#
-#    user_id = Column(
-#        Integer,
-#        ForeignKey("users.id", ondelete="CASCADE"),
-#        nullable=False,
-#        primary_key=True,
-#    )
-#    post_id = Column(
-#        Integer,
-#        ForeignKey("posts.id", ondelete="CASCADE"),
-#        nullable=False,
-#        primary_key=True,
-#    )
+class Client(Base):
+    __tablename__ = "clients"
+    id = Column(Integer, nullable=False, primary_key=True)
+    uuid = Column(UUIDType, server_default=text("uuid_generate_v4()"), nullable=False)
+    usage = Column(Integer, server_default="0")
+    user = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    inbound = Column(ForeignKey("inbounds.id", ondelete="CASCADE"), nullable=False)
