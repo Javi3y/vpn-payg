@@ -71,14 +71,18 @@ class InboundIn(Inbound):
 class InboundOut(Inbound):
     protocol: Protocol
 
-#Clients
+
+# Clients
+
 
 class Client(BaseModel):
     pass
 
+
 class ClientIn(Client):
-    inbound: int 
+    inbound: int
+
 
 class ClientOut(Client):
-    inbound: InboundOut 
+    inbound: InboundOut
     uuid: UUID4

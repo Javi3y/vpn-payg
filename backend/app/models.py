@@ -1,6 +1,15 @@
 from sqlalchemy.orm import validates, relationship
 from .database import Base
-from sqlalchemy import TIMESTAMP, Boolean, Column, Float, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy_utils import ChoiceType, EmailType, PasswordType, URLType, UUIDType
 from sqlalchemy.sql.expression import text
 
@@ -43,7 +52,9 @@ class Inbound(Base):
     protocol = Column(ChoiceType(PROTOCOLS))
     detail = Column(String, nullable=False, server_default=" ")
     base_link = Column(String, nullable=False)
-    __table_args__ = (UniqueConstraint('host', 'inbound_id', name='_host_inbound_id_uc'),)
+    __table_args__ = (
+        UniqueConstraint("host", "inbound_id", name="_host_inbound_id_uc"),
+    )
 
 
 class Client(Base):
@@ -53,6 +64,8 @@ class Client(Base):
     usage = Column(Integer, server_default="0")
     user_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     inbound_id = Column(ForeignKey("inbounds.id", ondelete="CASCADE"), nullable=False)
-    __table_args__ = (UniqueConstraint('user_id', 'inbound_id', name='_inbound_user_uc'),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "inbound_id", name="_inbound_user_uc"),
+    )
     user = relationship("User")
     inbound = relationship("Inbound")

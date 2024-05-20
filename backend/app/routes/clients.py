@@ -35,7 +35,9 @@ async def create_client(
         uuid=uuid,
         tgid=current_user.tgid,
         limit=gb_b_converter(
-            (current_user.balance / inbound.price) if current_user.balance > 0 else 0.001
+            (current_user.balance / inbound.price)
+            if current_user.balance > 0
+            else 0.001
         ),
     )
     print(created_client)

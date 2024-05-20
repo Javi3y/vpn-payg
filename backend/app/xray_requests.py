@@ -3,7 +3,11 @@ from fastapi import HTTPException
 from httpx import AsyncClient
 import json
 
-from starlette.status import HTTP_400_BAD_REQUEST
+from starlette.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_404_NOT_FOUND,
+)
 
 
 API_TRIES = 5
@@ -25,10 +29,21 @@ async def get_token(username, host, password):
                 response = await client.post(
                     host + "/login", json=headers, timeout=BACK_OFF
                 )
+                json_response = json.loads(response.text)
+                if not json_response["success"]:
+                    if json_response["msg"].startswith("Invalid username"):
+                        raise HTTPException(
+                            status_code=HTTP_401_UNAUTHORIZED, detail=json_response
+                        )
+                    raise HTTPException(
+                        status_code=HTTP_400_BAD_REQUEST, detail=json_response
+                    )
                 result = response.cookies.get("session")
             except Exception as e:
                 print(str(e))
                 tries += 1
+                if tries >= API_TRIES:
+                    raise e
     return result
 
 
@@ -40,10 +55,27 @@ async def get_inbound(session, host, inbound_id):
         async with AsyncClient(cookies={"session": session}) as client:
             try:
                 response = await client.get(url, timeout=BACK_OFF)
-                result = json.loads(response.text)
+                if response.status_code in range(300, 399):
+                    raise HTTPException(
+                        status_code=HTTP_401_UNAUTHORIZED,
+                        detail="invalid session update session",
+                    )
+
+                json_response = json.loads(response.text)
+                if not json_response["success"]:
+                    if json_response["msg"].startswith("Obtain Failed"):
+                        raise HTTPException(
+                            status_code=HTTP_404_NOT_FOUND, detail=json_response
+                        )
+                    raise HTTPException(
+                        status_code=HTTP_400_BAD_REQUEST, detail=json_response
+                    )
+                result = json_response
             except Exception as e:
                 print(str(e))
                 tries += 1
+                if tries >= API_TRIES:
+                    raise e
     return result
 
 
@@ -91,13 +123,16 @@ async def create_inbound_client(
                     json=headers,
                     timeout=BACK_OFF,
                 )
-                if not json.loads(response.text)['success']:
-                   raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=json.loads(response.text))
-                
+                if not json.loads(response.text)["success"]:
+                    raise HTTPException(
+                        status_code=HTTP_400_BAD_REQUEST,
+                        detail=json.loads(response.text),
+                    )
+
                 result = response.text
             except Exception as e:
                 print(str(e))
-                tries += 1 
+                tries += 1
                 if tries >= API_TRIES:
                     raise e
     return result

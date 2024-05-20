@@ -13,5 +13,6 @@ class UserAdmin(ModelView, model=models.User):
 class InboundAdmin(ModelView, model=models.Inbound):
     form_excluded_columns = ["session_token"]
 
+
 class ClientAdmin(ModelView, model=models.Client):
     pass
