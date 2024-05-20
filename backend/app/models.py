@@ -1,4 +1,4 @@
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 from .database import Base
 from sqlalchemy import TIMESTAMP, Boolean, Column, Float, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy_utils import ChoiceType, EmailType, PasswordType, URLType, UUIDType
@@ -9,6 +9,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, nullable=False, primary_key=True)
     email = Column(EmailType, nullable=False, unique=True)
+    username = Column(String, nullable=False, unique=True)
     uuid = Column(UUIDType, server_default=text("uuid_generate_v4()"), unique=True)
     password = Column(
         PasswordType(schemes=["pbkdf2_sha512", "md5_crypt"], deprecated=["md5_crypt"]),
@@ -42,7 +43,7 @@ class Inbound(Base):
     protocol = Column(ChoiceType(PROTOCOLS))
     detail = Column(String, nullable=False, server_default=" ")
     base_link = Column(String, nullable=False)
-    __table_args__ = (UniqueConstraint('host', 'inbound_id', name='_host_location_uc'),)
+    __table_args__ = (UniqueConstraint('host', 'inbound_id', name='_host_inbound_id_uc'),)
 
 
 class Client(Base):
@@ -50,5 +51,8 @@ class Client(Base):
     id = Column(Integer, nullable=False, primary_key=True)
     uuid = Column(UUIDType, server_default=text("uuid_generate_v4()"), nullable=False)
     usage = Column(Integer, server_default="0")
-    user = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    inbound = Column(ForeignKey("inbounds.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    inbound_id = Column(ForeignKey("inbounds.id", ondelete="CASCADE"), nullable=False)
+    __table_args__ = (UniqueConstraint('user_id', 'inbound_id', name='_inbound_user_uc'),)
+    user = relationship("User")
+    inbound = relationship("Inbound")

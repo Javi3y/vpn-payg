@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel, EmailStr, HttpUrl
+from pydantic import UUID4, BaseModel, EmailStr, HttpUrl
 
 
 # token
@@ -19,6 +19,7 @@ class TokenData(BaseModel):
 
 
 class User(BaseModel):
+    username: str
     email: EmailStr
 
     class Config:
@@ -64,7 +65,20 @@ class InboundIn(Inbound):
     host: str
     inbound_id: int
     protocol: Optional[str]
+    base_link: str
 
 
 class InboundOut(Inbound):
     protocol: Protocol
+
+#Clients
+
+class Client(BaseModel):
+    pass
+
+class ClientIn(Client):
+    inbound: int 
+
+class ClientOut(Client):
+    inbound: InboundOut 
+    uuid: UUID4

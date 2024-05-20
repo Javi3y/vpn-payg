@@ -6,14 +6,14 @@ from sqlalchemy import select
 from .auth import create_access_token
 
 from . import models
-from .routes import users, inbounds
+from .routes import users, inbounds, clients
 
 from sqlalchemy.orm import Session
 from starlette.status import (
     HTTP_401_UNAUTHORIZED,
 )
 from sqladmin import Admin
-from .admin.views import UserAdmin, InboundAdmin
+from .admin.views import ClientAdmin, UserAdmin, InboundAdmin
 
 from .database import get_db, engine
 from .admin.admin import authentication_backend
@@ -27,6 +27,7 @@ admin = Admin(app, engine, authentication_backend=authentication_backend)
 
 admin.add_view(UserAdmin)
 admin.add_view(InboundAdmin)
+admin.add_view(ClientAdmin)
 
 origins = ["*"]
 
@@ -39,6 +40,7 @@ app.add_middleware(
 )
 app.include_router(users.router)
 app.include_router(inbounds.router)
+app.include_router(clients.router)
 scheduler.start()
 
 

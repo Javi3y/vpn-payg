@@ -83,6 +83,7 @@ async def create_inbound_client(
                     }
                 clients = str(clients).replace("'", '"')
                 headers = {"id": inbound_id, "settings": clients}
+                print(headers)
                 response = await client.post(
                     host + "/panel/api/inbounds/addClient",
                     json=headers,
