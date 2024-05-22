@@ -36,6 +36,8 @@ class User(Base):
         if not tgid.isdecimal():
             raise ValueError("OOPS,Should be in int.")
         return tgid
+    def __str__(self):
+        return self.username
 
 
 class Inbound(Base):
@@ -55,6 +57,8 @@ class Inbound(Base):
     __table_args__ = (
         UniqueConstraint("host", "inbound_id", name="_host_inbound_id_uc"),
     )
+    def __str__(self):
+        return self.detail
 
 
 class Client(Base):
@@ -69,3 +73,5 @@ class Client(Base):
     )
     user = relationship("User")
     inbound = relationship("Inbound")
+    def __str__(self):
+        return self.user + self.inbound
