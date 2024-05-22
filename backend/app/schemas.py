@@ -52,6 +52,7 @@ class Protocol(BaseModel):
 
 
 class Inbound(BaseModel):
+    remark: str
     price: int
     detail: str
 
