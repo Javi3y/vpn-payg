@@ -86,4 +86,5 @@ class ClientIn(Client):
 
 class ClientOut(Client):
     inbound: InboundOut
-    uuid: UUID4
+    uuid: Optional[UUID4]
+    password: Optional[str]

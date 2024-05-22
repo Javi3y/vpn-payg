@@ -55,17 +55,19 @@ async def create_inbound(
             user = await db.execute(select(models.User).where(models.User.tgid == str(tgid)))
             user = user.scalar()
             if user:
-                #uuid = str(uuid4())
                 if new_inbound.protocol == "vless":
                 
                     new_client = models.Client(
                         uuid=client['id'], user_id=user.id, inbound_id=new_inbound.id
                     )
+                elif new_inbound.protocol == "trojan":
+                    new_client = models.Client(
+                        password=client['password'], user_id=user.id, inbound_id=new_inbound.id
+                    )
                     db.add(new_client)
                     await db.commit()
 
     await db.refresh(new_inbound)
-    print("all alright")
     return new_inbound
 
 

@@ -92,25 +92,40 @@ async def get_inbound_clients(session, host, inbound_id):
 
 
 async def create_inbound_client(
-    session, host, inbound_id, protocol, email, uuid, tgid, limit
+    session,
+    host,
+    inbound_id,
+    protocol,
+    email,
+    tgid,
+    limit,
+    remark,
+    uuid=None,
+    password=None,
 ):
     result = ""
     tries = 0
     while not result and tries < API_TRIES:
         async with AsyncClient(cookies={"session": session}) as client:
             try:
+                client_email = remark + ' - ' + email
                 if protocol == "vless":
                     clients = {
                         "clients": [
-                            {"id": uuid, "email": email, "totalGB": limit, "tgId": tgid}
+                            {
+                                "id": uuid,
+                                "email": client_email,
+                                "totalGB": limit,
+                                "tgId": tgid,
+                            }
                         ]
                     }
                 elif protocol == "trojan":
                     clients = {
                         "clients": [
                             {
-                                "password": uuid,
-                                "email": email,
+                                "password": password,
+                                "email": client_email,
                                 "totalGB": limit,
                                 "tgId": tgid,
                             }
