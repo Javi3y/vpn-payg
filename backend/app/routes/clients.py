@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from sqlalchemy import select
 from app import models, schemas
 from app.auth import get_current_user
@@ -6,6 +6,8 @@ from app.database import get_db
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette.status import (
+    HTTP_204_NO_CONTENT,
+    HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
 )
@@ -13,7 +15,11 @@ from uuid import uuid4
 import string
 import random
 
-from app.xray_requests import create_inbound_client, gb_b_converter
+from app.xray_requests import (
+    create_inbound_client,
+    delete_inbound_client,
+    gb_b_converter,
+)
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 
@@ -29,7 +35,9 @@ async def create_client(
     )
     inbound = inbound.scalar()
     check_client = await db.execute(
-        select(models.Client).where(models.Client.user_id == current_user.id).where(models.Client.inbound_id == client.inbound)
+        select(models.Client)
+        .where(models.Client.user_id == current_user.id)
+        .where(models.Client.inbound_id == client.inbound)
     )
     check_client = check_client.scalar()
     if check_client:
@@ -84,3 +92,40 @@ async def create_client(
     await db.commit()
     await db.refresh(new_client)
     return new_client
+
+
+@router.delete("/{id}")
+async def delete_client(
+    id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    client = await db.execute(select(models.Client).where(models.Client.id == id))
+    client = client.scalar()
+    if not client:
+        raise HTTPException(HTTP_404_NOT_FOUND, detail="client does not exist")
+    if not client.user_id == current_user.id:
+        raise HTTPException(HTTP_403_FORBIDDEN, detail="user does not own client")
+    inbound = await db.execute(
+        select(models.Inbound).where(models.Inbound.id == client.inbound_id)
+    )
+    inbound = inbound.scalar()
+    if inbound.protocol == "vless":
+        response = await delete_inbound_client(
+            session=inbound.session_token,
+            host=inbound.host,
+            inbound_id=inbound.inbound_id,
+            protocol=inbound.protocol,
+            uuid=client.uuid,
+        )
+    if inbound.protocol == "trojan":
+        response = await delete_inbound_client(
+            session=inbound.session_token,
+            host=inbound.host,
+            inbound_id=inbound.inbound_id,
+            protocol=inbound.protocol,
+            uuid=client.password,
+        )
+    await db.delete(client)
+    await db.commit()
+    return Response(status_code=HTTP_204_NO_CONTENT)
