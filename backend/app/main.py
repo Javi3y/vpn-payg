@@ -6,7 +6,7 @@ from sqlalchemy import select
 from .auth import create_access_token
 
 from . import models
-from .routes import users, inbounds, clients
+from .routes import users, inbounds, clients, sub
 
 from sqlalchemy.orm import Session
 from starlette.status import (
@@ -41,6 +41,7 @@ app.add_middleware(
 app.include_router(users.router)
 app.include_router(inbounds.router)
 app.include_router(clients.router)
+app.include_router(sub.router)
 scheduler.start()
 
 
