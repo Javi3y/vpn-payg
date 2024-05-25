@@ -124,7 +124,7 @@ async def delete_client(
             host=inbound.host,
             inbound_id=inbound.inbound_id,
             protocol=inbound.protocol,
-            uuid=client.password,
+            password=client.password,
         )
     await db.delete(client)
     await db.commit()

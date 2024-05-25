@@ -70,6 +70,7 @@ class InboundIn(Inbound):
 
 
 class InboundOut(Inbound):
+    id: int
     protocol: Protocol
 
 
