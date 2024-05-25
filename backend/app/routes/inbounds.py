@@ -95,12 +95,12 @@ async def delete_inbound(
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN, detail="user isn't user user"
         )
-    clients = await db.execute(select(models.Client).where(models.Client.inbound_id == id))
-    clients = clients.scalars()
     inbound = await db.execute(select(models.Inbound).where(models.Inbound.id == id))
     inbound = inbound.scalar()
     if not inbound:
         raise HTTPException(HTTP_404_NOT_FOUND, detail="inbound does not exist")
+    clients = await db.execute(select(models.Client).where(models.Client.inbound_id == id))
+    clients = clients.scalars()
     for client in clients:
 
         if inbound.protocol == "vless":
