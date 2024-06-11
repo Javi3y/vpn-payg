@@ -16,12 +16,31 @@ import { RouterLink, RouterView } from 'vue-router'
       </a>
     </template>
   </Menubar>
-	  <Router-view></Router-view>
+  <div class="m-3 p-3">
+    <Router-view :user="user"></Router-view>
+  </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
+  async created() {
+    try {
+      const response = await axios.get('user')
+      this.user = response.data
+    } catch (error) {
+      console.error(error)
+    }
+  },
   data() {
-    return { items: [{ label: 'test', icon: 'pi pi-user' }] }
+    return {
+      user: null,
+      items: [
+        {
+          label: 'test',
+          icon: 'pi pi-user'
+        }
+      ]
+    }
   }
 }
 </script>

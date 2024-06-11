@@ -1,10 +1,11 @@
+from typing import List
 from fastapi import APIRouter, Response
 from sqlalchemy import select
 from app import models, schemas
 from app.auth import get_current_user
 from app.database import get_db
 from fastapi import Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from starlette.status import (
     HTTP_204_NO_CONTENT,
     HTTP_403_FORBIDDEN,
@@ -129,3 +130,17 @@ async def delete_client(
     await db.delete(client)
     await db.commit()
     return Response(status_code=HTTP_204_NO_CONTENT)
+
+
+@router.get("/", response_model=List[schemas.ClientOut])
+async def get_clients(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    check_client = await db.execute(
+        select(models.Client)
+        .where(models.Client.user_id == current_user.id)
+        .options(selectinload(models.Client.inbound))
+    )
+    check_client = check_client.scalars().all()
+    return check_client

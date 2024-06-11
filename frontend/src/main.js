@@ -5,6 +5,7 @@ import Lara from '@/presets/lara' //import preset
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import './axios'
 
 const app = createApp(App)
 app.use(PrimeVue, {

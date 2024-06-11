@@ -6,10 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
 from app.jobs.tasks import update_session
-from .auth import create_access_token
+from .auth import create_access_token, get_current_user
 
-from . import models
+from . import models, schemas
 from .routes import users, inbounds, clients, sub
+
 
 from sqlalchemy.orm import Session
 from starlette.status import (
@@ -65,3 +66,8 @@ async def login(
     access_token = await create_access_token(data={"user_id": user.id})
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.get("/user", response_model=schemas.UserOut)
+async def get_user(current_user: models.User = Depends(get_current_user)):
+    return current_user

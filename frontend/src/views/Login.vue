@@ -30,6 +30,9 @@ import Button from 'primevue/button'
 import axios from 'axios'
 export default {
   name: 'UserLogin',
+  created() {
+    localStorage.removeItem('token')
+  },
   data() {
     return {
       username: '',
@@ -43,9 +46,10 @@ export default {
         params.append('username', this.username)
         params.append('password', this.password)
 
-        const response = await axios.post('http://localhost:8000/login', params)
+        const response = await axios.post('login', params)
+		console.log("yes")
         localStorage.setItem('token', response.data.access_token)
-        console.log(response)
+        this.$router.push('/')
       } catch (error) {
         console.error(error)
       }
