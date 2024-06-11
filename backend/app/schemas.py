@@ -33,6 +33,7 @@ class UserCreate(User):
 
 class UserOut(User):
     id: int
+    uuid: UUID4
     balance: int
     tgid: str
 

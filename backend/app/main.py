@@ -1,8 +1,11 @@
+import asyncio
 from fastapi import Depends, FastAPI, HTTPException, BackgroundTasks
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
+
+from app.jobs.tasks import update_session
 from .auth import create_access_token
 
 from . import models
@@ -42,6 +45,7 @@ app.include_router(users.router)
 app.include_router(inbounds.router)
 app.include_router(clients.router)
 app.include_router(sub.router)
+
 scheduler.start()
 
 

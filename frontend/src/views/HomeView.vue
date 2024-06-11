@@ -1,9 +1,13 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import 'primeicons/primeicons.css'
 </script>
-
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+	Home Page
 </template>
+<script>
+export default {
+  data() {
+    return { items: [{ label: 'test', icon: 'pi pi-user' }] }
+  }
+}
+</script>
