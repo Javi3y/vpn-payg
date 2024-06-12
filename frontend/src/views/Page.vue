@@ -17,7 +17,7 @@ import { RouterLink, RouterView } from 'vue-router'
     </template>
   </Menubar>
   <div class="m-3 p-3">
-    <Router-view :user="user"></Router-view>
+    <Router-view :user="user" :key="$route.path"></Router-view>
   </div>
 </template>
 <script>

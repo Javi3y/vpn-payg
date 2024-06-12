@@ -90,3 +90,4 @@ class ClientOut(Client):
     inbound: InboundOut
     uuid: Optional[UUID4]
     password: Optional[str]
+    usage: int
