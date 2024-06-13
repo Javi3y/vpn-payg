@@ -4,6 +4,7 @@ import HomeView from '@/views/HomeView.vue'
 import Page from '@/views/Page.vue'
 import Logout from '@/views/Logout.vue'
 import InboundsView from '@/views/InboundsView.vue'
+import InboundView from '@/views/InboundView.vue'
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
@@ -21,6 +22,11 @@ const router = createRouter({
 					path: 'inbounds',
 					name: 'inbounds',
 					component: InboundsView
+				},
+				{
+					path: 'inbound/:id',
+					name: 'inbound',
+					component: InboundView
 				}
 			]
 		},

@@ -86,6 +86,16 @@ async def get_inbounds(
     results = await db.execute(select(models.Inbound))
     return results.scalars().all()
 
+@router.get("/{id}", response_model=schemas.InboundOut)
+async def get_inbound(
+
+    id: int,
+    current_user: int = Depends(get_current_user), db: Session = Depends(get_db),
+):
+    results = await db.execute(select(models.Inbound).where(models.Inbound.id==id))
+    return results.scalar()
+
+
 
 @router.delete("/{id}")
 async def delete_inbound(
