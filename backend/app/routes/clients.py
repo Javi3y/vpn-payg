@@ -35,6 +35,8 @@ async def create_client(
         select(models.Inbound).where(models.Inbound.id == client.inbound)
     )
     inbound = inbound.scalar()
+    if not inbound:
+        raise HTTPException(HTTP_404_NOT_FOUND, detail="inbound does not exist")
     check_client = await db.execute(
         select(models.Client)
         .where(models.Client.user_id == current_user.id)

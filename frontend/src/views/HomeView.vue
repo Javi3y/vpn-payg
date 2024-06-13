@@ -12,6 +12,7 @@ import Client from '@/components/Client.vue'
       <h3 class="pl-4">
         <RouterLink class="green" to="/balance"> {{ user.balance }} T </RouterLink>
       </h3>
+	  <h2 class="green"><a :href="`http://localhost:8000/sub/${user.uuid}`">sub</a></h2>
     </Fieldset>
     <Fieldset legend="Clients" :toggleable="true" v-if="clients.length > 0">
       <Client v-for="client in clients" :client="client"></Client>
@@ -24,7 +25,7 @@ export default {
   props: ['user'],
   data() {
     return {
-      clients: []
+      clients: [],
     }
   },
   async created() {
