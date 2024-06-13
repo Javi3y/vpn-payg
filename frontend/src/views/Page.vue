@@ -11,21 +11,20 @@ import { RouterLink, RouterView } from 'vue-router'
     </template>
     <template #item="{ item }">
       <a v-ripple class="flex align-items-center">
-        <RouterLink to="/">
+        <RouterLink :to="item.url">
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
         </RouterLink>
       </a>
     </template>
-	<template #end>
-
+    <template #end>
       <a v-ripple class="flex align-items-center">
         <RouterLink to="/logout/">
           <span class="pi pi-sign-out" />
           <span class="ml-2">logout</span>
         </RouterLink>
       </a>
-	</template>
+    </template>
   </Menubar>
   <div class="m-3 p-3">
     <Router-view :user="user" :key="$route.path"></Router-view>
@@ -48,7 +47,13 @@ export default {
       items: [
         {
           label: 'home',
-          icon: 'pi pi-home'
+          icon: 'pi pi-home',
+          url: '/'
+        },
+        {
+          label: 'inbounds',
+          icon: 'pi pi-server',
+          url: '/inbounds'
         }
       ]
     }

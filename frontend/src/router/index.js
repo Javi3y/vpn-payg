@@ -3,6 +3,7 @@ import Login from '@/views/Login.vue'
 import HomeView from '@/views/HomeView.vue'
 import Page from '@/views/Page.vue'
 import Logout from '@/views/Logout.vue'
+import InboundsView from '@/views/InboundsView.vue'
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
@@ -15,6 +16,11 @@ const router = createRouter({
 					path: '',
 					name: 'home',
 					component: HomeView
+				},
+				{
+					path: 'inbounds',
+					name: 'inbounds',
+					component: InboundsView
 				}
 			]
 		},
