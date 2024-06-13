@@ -4,7 +4,7 @@ import InputNumber from 'primevue/inputnumber'
 import Button from 'primevue/button'
 </script>
 <template>
-  <div class="flex flex-col h-screen justify-center items-center">
+  <div class="mb-16 absolute flex flex-col justify-center items-center" style="width:calc(100vw - 2rem);height:calc(100vh - 10rem);">
     <Fieldset class="auto-rows-max" legend="Balance">
       <form @submit.prevent="addBalance">
         <div class="flex flex-col gap-2">

@@ -5,7 +5,7 @@ import 'primeicons/primeicons.css'
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 <template>
-  <Menubar :model="items" class="w-svw">
+  <Menubar :model="items" class="w-svw !fixed h-16">
     <template #start>
       <object class="mr-2" :data="logo" width="35" height="35"></object>
     </template>
@@ -36,7 +36,7 @@ import { RouterLink, RouterView } from 'vue-router'
       </router-link>
     </template>
   </Menubar>
-  <div class="m-3 p-3">
+  <div class="mt-20 m-4 p-4">
     <Router-view :user="user" :key="$route.path"></Router-view>
   </div>
 </template>
