@@ -10,20 +10,30 @@ import { RouterLink, RouterView } from 'vue-router'
       <object class="mr-2" :data="logo" width="35" height="35"></object>
     </template>
     <template #item="{ item }">
-      <a v-ripple class="flex align-items-center">
-        <RouterLink :to="item.url">
+      <router-link v-slot="routerProps" activeClass="test" :to="item.url" custom>
+        <a
+          :href="routerProps.href"
+          @click="($event) => routerProps.navigate($event)"
+          @keydown.enter.space="($event) => routerProps.navigate($event)"
+          class="flex items-center cursor-pointer px-4 py-2 overflow-hidden relative font-semibold text-lg uppercase"
+        >
           <span :class="item.icon" />
           <span class="ml-2">{{ item.label }}</span>
-        </RouterLink>
-      </a>
+        </a>
+      </router-link>
     </template>
     <template #end>
-      <a v-ripple class="flex align-items-center">
-        <RouterLink to="/logout/">
+      <router-link v-slot="routerProps" to="/logout" custom>
+        <a
+          :href="routerProps.href"
+          @click="($event) => routerProps.navigate($event)"
+          @keydown.enter.space="($event) => routerProps.navigate($event)"
+          class="flex items-center cursor-pointer px-4 py-2 overflow-hidden relative font-semibold text-lg uppercase"
+        >
           <span class="pi pi-sign-out" />
           <span class="ml-2">logout</span>
-        </RouterLink>
-      </a>
+        </a>
+      </router-link>
     </template>
   </Menubar>
   <div class="m-3 p-3">

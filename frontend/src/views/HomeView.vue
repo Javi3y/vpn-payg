@@ -9,9 +9,9 @@ import Client from '@/components/Client.vue'
       <h2>Username:</h2>
       <h3 class="pl-4">{{ user.username }}</h3>
       <h2>Balance:</h2>
-      <RouterLink to="/balance">
-        <h3 class="pl-4">{{ user.balance }} T</h3>
-      </RouterLink>
+      <h3 class="pl-4">
+        <RouterLink class="green" to="/balance"> {{ user.balance }} T </RouterLink>
+      </h3>
     </Fieldset>
     <Fieldset legend="Clients" :toggleable="true" v-if="clients.length > 0">
       <Client v-for="client in clients" :client="client"></Client>
