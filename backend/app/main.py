@@ -67,7 +67,3 @@ async def login(
 
     return {"access_token": access_token, "token_type": "bearer"}
 
-
-@app.get("/user", response_model=schemas.UserOut)
-async def get_user(current_user: models.User = Depends(get_current_user)):
-    return current_user

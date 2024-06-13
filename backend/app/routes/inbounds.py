@@ -80,7 +80,9 @@ async def create_inbound(
 
 
 @router.get("/", response_model=List[schemas.InboundOut])
-async def get_inbounds(db: Session = Depends(get_db)):
+async def get_inbounds(
+    current_user: int = Depends(get_current_user), db: Session = Depends(get_db)
+):
     results = await db.execute(select(models.Inbound))
     return results.scalars().all()
 
@@ -99,7 +101,9 @@ async def delete_inbound(
     inbound = inbound.scalar()
     if not inbound:
         raise HTTPException(HTTP_404_NOT_FOUND, detail="inbound does not exist")
-    clients = await db.execute(select(models.Client).where(models.Client.inbound_id == id))
+    clients = await db.execute(
+        select(models.Client).where(models.Client.inbound_id == id)
+    )
     clients = clients.scalars()
     for client in clients:
 

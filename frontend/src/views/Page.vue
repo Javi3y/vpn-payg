@@ -11,10 +11,21 @@ import { RouterLink, RouterView } from 'vue-router'
     </template>
     <template #item="{ item }">
       <a v-ripple class="flex align-items-center">
-        <span :class="item.icon" />
-        <span class="ml-2">{{ item.label }}</span>
+        <RouterLink to="/">
+          <span :class="item.icon" />
+          <span class="ml-2">{{ item.label }}</span>
+        </RouterLink>
       </a>
     </template>
+	<template #end>
+
+      <a v-ripple class="flex align-items-center">
+        <RouterLink to="/logout/">
+          <span class="pi pi-sign-out" />
+          <span class="ml-2">logout</span>
+        </RouterLink>
+      </a>
+	</template>
   </Menubar>
   <div class="m-3 p-3">
     <Router-view :user="user" :key="$route.path"></Router-view>
@@ -25,7 +36,7 @@ import axios from 'axios'
 export default {
   async created() {
     try {
-      const response = await axios.get('user')
+      const response = await axios.get('users/profile')
       this.user = response.data
     } catch (error) {
       console.error(error)
@@ -36,8 +47,8 @@ export default {
       user: null,
       items: [
         {
-          label: 'test',
-          icon: 'pi pi-user'
+          label: 'home',
+          icon: 'pi pi-home'
         }
       ]
     }
