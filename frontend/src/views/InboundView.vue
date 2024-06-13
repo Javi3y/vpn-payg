@@ -1,5 +1,4 @@
 <script setup>
-import 'primeicons/primeicons.css'
 import Button from 'primevue/button'
 </script>
 <template>

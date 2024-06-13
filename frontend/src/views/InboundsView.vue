@@ -1,5 +1,4 @@
 <script setup>
-import 'primeicons/primeicons.css'
 import InboundCard from '@/components/InboundCard.vue'
 </script>
 <template>

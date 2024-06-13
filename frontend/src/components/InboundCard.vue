@@ -1,5 +1,4 @@
 <script setup>
-import 'primeicons/primeicons.css'
 import { RouterLink } from 'vue-router'
 </script>
 <template>

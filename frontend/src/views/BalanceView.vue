@@ -1,5 +1,4 @@
 <script setup>
-import 'primeicons/primeicons.css'
 import Fieldset from 'primevue/fieldset'
 import InputNumber from 'primevue/inputnumber'
 import Button from 'primevue/button'
