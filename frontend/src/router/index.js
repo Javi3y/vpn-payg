@@ -5,6 +5,7 @@ import Page from '@/views/Page.vue'
 import Logout from '@/views/Logout.vue'
 import InboundsView from '@/views/InboundsView.vue'
 import InboundView from '@/views/InboundView.vue'
+import BalanceView from '@/views/BalanceView.vue'
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
@@ -27,6 +28,11 @@ const router = createRouter({
 					path: 'inbound/:id',
 					name: 'inbound',
 					component: InboundView
+				},
+				{
+					path: 'balance',
+					name: 'balance',
+					component: BalanceView
 				}
 			]
 		},
@@ -40,7 +46,6 @@ const router = createRouter({
 			name: 'logout',
 			component: Logout
 		}
-
 	]
 })
 
