@@ -1,5 +1,6 @@
 <script setup>
 import 'primeicons/primeicons.css'
+import Button from 'primevue/button'
 </script>
 <template>
   <div v-if="inbound">
@@ -9,6 +10,14 @@ import 'primeicons/primeicons.css'
     <p>protocol: {{ inbound.protocol.value }}</p>
     <div v-if="client">
       <p>client: {{ client }}</p>
+      <form @submit.prevent="deleteClient">
+        <Button type="submit" label="Delete Client" text />
+      </form>
+    </div>
+    <div v-else>
+      <form @submit.prevent="createClient">
+        <Button type="submit" label="Create new Client" text />
+      </form>
     </div>
   </div>
 </template>
@@ -32,6 +41,25 @@ export default {
       }
     } catch (error) {
       console.error(error)
+    }
+  },
+  methods: {
+    async createClient() {
+      try {
+        let params = { inbound: this.inbound.id }
+        const response = await axios.post('clients', params)
+        this.client = response.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async deleteClient() {
+      try {
+        await axios.delete(`clients/${this.client.id}`)
+        this.client = null
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }
