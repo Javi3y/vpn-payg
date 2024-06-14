@@ -68,10 +68,11 @@ class Inbound(Base):
 class Client(Base):
     __tablename__ = "clients"
     id = Column(Integer, nullable=False, primary_key=True)
+    disabled = Column(Boolean, nullable=False, server_default="False")
     email = Column(String, nullable=False)
     uuid = Column(UUIDType, nullable=True)
     password = Column(String, nullable=True)
-    usage = Column(Integer, server_default="0")
+    usage = Column(Float, server_default="0")
     user_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     inbound_id = Column(ForeignKey("inbounds.id", ondelete="CASCADE"), nullable=False)
     __table_args__ = (

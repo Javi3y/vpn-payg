@@ -1,7 +1,12 @@
 from sqlalchemy import select
 from app.database import get_db
 from app.models import Inbound, Client, User
-from app.xray_requests import b_gb_converter, get_token, get_client_usage
+from app.xray_requests import (
+    b_gb_converter,
+    disable_client,
+    get_token,
+    get_client_usage,
+)
 
 
 def print_something():
@@ -28,7 +33,7 @@ async def update_balance():
     inbounds = results.scalars().all()
     for inbound in inbounds:
         clients = await db.execute(
-            select(Client).where(Client.inbound_id == inbound.id)
+            select(Client).where(Client.inbound_id == inbound.id).where(Client.disabled == False)
         )
         clients = clients.scalars().all()
         for client in clients:
@@ -46,7 +51,6 @@ async def update_balance():
 
             client.usage = usage + client.usage
 
-
             await db.commit()
             await db.refresh(client)
             await db.refresh(user)
@@ -55,10 +59,32 @@ async def update_balance():
 
             print("user balance before calculating: " + str(user.balance))
 
-            user.balance = user.balance - b_gb_converter(usage) * inbound.price
-
+            await db.refresh(user)
+            await db.refresh(client)
+            await db.refresh(inbound)
+            user.balance =  user.balance - b_gb_converter(usage) * inbound.price
 
             await db.commit()
             await db.refresh(user)
+            await db.refresh(client)
+            await db.refresh(inbound)
 
             print("user balance after calculating: " + str(user.balance))
+
+            if user.balance <= 5000:
+                disabling_clients = await db.execute(
+                    select(Client).where(Client.user_id == user.id)
+                )
+                for disabling_client in disabling_clients.scalars().all():
+                    await disable_client(
+                        inbound.session_token,
+                        inbound.host,
+                        inbound.inbound_id,
+                        inbound.protocol,
+                        password=disabling_client.password,
+                    )
+                    disabling_client.disabled = True
+                    await db.commit()
+                    await db.refresh(user)
+                    await db.refresh(client)
+                    await db.refresh(inbound)

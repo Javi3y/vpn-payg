@@ -64,10 +64,14 @@ async def create_inbound(
                 if new_inbound.protocol == "vless":
 
                     new_client = models.Client(
-                        uuid=client["id"], user_id=user.id, inbound_id=new_inbound.id
+                        email=client["email"],
+                        uuid=client["id"],
+                        user_id=user.id,
+                        inbound_id=new_inbound.id,
                     )
                 elif new_inbound.protocol == "trojan":
                     new_client = models.Client(
+                        email=client["email"],
                         password=client["password"],
                         user_id=user.id,
                         inbound_id=new_inbound.id,
@@ -86,15 +90,15 @@ async def get_inbounds(
     results = await db.execute(select(models.Inbound))
     return results.scalars().all()
 
+
 @router.get("/{id}", response_model=schemas.InboundOut)
 async def get_inbound(
-
     id: int,
-    current_user: int = Depends(get_current_user), db: Session = Depends(get_db),
+    current_user: int = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    results = await db.execute(select(models.Inbound).where(models.Inbound.id==id))
+    results = await db.execute(select(models.Inbound).where(models.Inbound.id == id))
     return results.scalar()
-
 
 
 @router.delete("/{id}")
