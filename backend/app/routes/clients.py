@@ -87,10 +87,10 @@ async def create_client(
             ),
         )
         new_client = models.Client(
-            password=password, user_id=current_user.id, inbound_id=inbound.id
+            email= inbound.remark + " - " + current_user.username ,password=password, user_id=current_user.id, inbound_id=inbound.id
         )
 
-    print(created_client)
+    
     db.add(new_client)
     await db.commit()
     await db.refresh(new_client)
@@ -146,3 +146,5 @@ async def get_clients(
     )
     check_client = check_client.scalars().all()
     return check_client
+
+

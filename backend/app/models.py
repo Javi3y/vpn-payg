@@ -68,6 +68,7 @@ class Inbound(Base):
 class Client(Base):
     __tablename__ = "clients"
     id = Column(Integer, nullable=False, primary_key=True)
+    email = Column(String, nullable=False)
     uuid = Column(UUIDType, nullable=True)
     password = Column(String, nullable=True)
     usage = Column(Integer, server_default="0")

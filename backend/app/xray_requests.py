@@ -19,6 +19,11 @@ def gb_b_converter(gb):
     return b
 
 
+def b_gb_converter(b):
+    gb = b / 1073741824
+    return gb
+
+
 async def get_token(username, host, password):
     result = ""
     tries = 0
@@ -153,7 +158,9 @@ async def create_inbound_client(
     return result
 
 
-async def delete_inbound_client(session, host, inbound_id, protocol, uuid=None, password=None):
+async def delete_inbound_client(
+    session, host, inbound_id, protocol, uuid=None, password=None
+):
     result = ""
     tries = 0
     while not result and tries < API_TRIES:
@@ -163,10 +170,13 @@ async def delete_inbound_client(session, host, inbound_id, protocol, uuid=None, 
                     client_id = uuid
                 elif protocol == "trojan":
                     client_id = password
-                response = await client.post(host + f"/panel/api/inbounds/{inbound_id}/delClient/{client_id}", timeout=BACK_OFF)
+                response = await client.post(
+                    host + f"/panel/api/inbounds/{inbound_id}/delClient/{client_id}",
+                    timeout=BACK_OFF,
+                )
                 json_response = json.loads(response.text)
                 if not json_response["success"]:
-                    #if json_response["msg"].startswith("Invalid username"):
+                    # if json_response["msg"].startswith("Invalid username"):
                     #    raise HTTPException(
                     #        status_code=HTTP_401_UNAUTHORIZED, detail=json_response
                     #    )
@@ -174,6 +184,37 @@ async def delete_inbound_client(session, host, inbound_id, protocol, uuid=None, 
                         status_code=HTTP_400_BAD_REQUEST, detail=json_response
                     )
                 result = response.text
+            except Exception as e:
+                print(str(e))
+                tries += 1
+                if tries >= API_TRIES:
+                    raise e
+    return result
+
+
+async def get_client_usage(session, host, email):
+    result = ""
+    tries = 0
+    while result == "" and tries < API_TRIES:
+        async with AsyncClient(cookies={"session": session}) as client:
+            try:
+                response = await client.get(
+                    host + f"/panel/api/inbounds/getClientTraffics/{email}",
+                    timeout=BACK_OFF,
+                )
+                json_response = json.loads(response.text)
+                if not json_response["success"]:
+                    if json_response["msg"].startswith("Invalid username"):
+                       raise HTTPException(
+                           status_code=HTTP_401_UNAUTHORIZED, detail=json_response
+                       )
+                    raise HTTPException(
+                        status_code=HTTP_400_BAD_REQUEST, detail=json_response
+                    )
+                obj = json_response['obj']
+                result = int(obj['down'])+int(obj['up'])
+
+
             except Exception as e:
                 print(str(e))
                 tries += 1

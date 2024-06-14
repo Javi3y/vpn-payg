@@ -9,7 +9,7 @@ import { RouterLink } from 'vue-router'
   </p>
   <p>protocol: {{ client.inbound.protocol.value }}</p>
   <p>price: {{ client.inbound.price }}</p>
-  <p>usage: {{ client.usage }}</p>
+  <p>usage: {{ client.usageGb }}</p>
 </template>
 <script>
 export default {
