@@ -267,7 +267,6 @@ async def disable_client(session, host, inbound_id, protocol, uuid=None, passwor
                         status_code=HTTP_400_BAD_REQUEST, detail=json_response
                     )
                 result = response.text
-                print(result)
             except Exception as e:
                 print(str(e))
                 tries += 1

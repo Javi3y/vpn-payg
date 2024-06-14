@@ -9,11 +9,6 @@ from app.xray_requests import (
 )
 
 
-def print_something():
-    print("hello world")
-    return "hello world"
-
-
 async def update_session():
     db_generator = get_db()
     db = await anext(db_generator)
@@ -33,7 +28,9 @@ async def update_balance():
     inbounds = results.scalars().all()
     for inbound in inbounds:
         clients = await db.execute(
-            select(Client).where(Client.inbound_id == inbound.id).where(Client.disabled == False)
+            select(Client)
+            .where(Client.inbound_id == inbound.id)
+            .where(Client.disabled == False)
         )
         clients = clients.scalars().all()
         for client in clients:
@@ -62,7 +59,7 @@ async def update_balance():
             await db.refresh(user)
             await db.refresh(client)
             await db.refresh(inbound)
-            user.balance =  user.balance - b_gb_converter(usage) * inbound.price
+            user.balance = user.balance - b_gb_converter(usage) * inbound.price
 
             await db.commit()
             await db.refresh(user)
