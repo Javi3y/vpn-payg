@@ -286,10 +286,10 @@ async def update_client(
 
 async def disable_client(session, host, inbound_id, protocol, uuid=None, password=None):
     return await update_client(
-        session,
-        host,
-        inbound_id,
-        protocol,
+        session=session,
+        host=host,
+        inbound_id=inbound_id,
+        protocol=protocol,
         uuid=uuid,
         password=password,
         enable=False,
@@ -301,10 +301,10 @@ async def update_client_limit(
     session, host, inbound_id, protocol, limit, uuid=None, password=None
 ):
     return await update_client(
-        session,
-        host,
-        inbound_id,
-        protocol,
+        session=session,
+        host=host,
+        inbound_id=inbound_id,
+        protocol=protocol,
         uuid=uuid,
         password=password,
         enable=True,
