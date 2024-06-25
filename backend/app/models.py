@@ -1,3 +1,4 @@
+import datetime
 from sqlalchemy.orm import validates, relationship
 from .database import Base
 from sqlalchemy import (
@@ -5,11 +6,14 @@ from sqlalchemy import (
     Boolean,
     CheckConstraint,
     Column,
+    DateTime,
     Float,
     ForeignKey,
     Integer,
     String,
+    Time,
     UniqueConstraint,
+    func,
 )
 from sqlalchemy_utils import ChoiceType, EmailType, PasswordType, URLType, UUIDType
 from sqlalchemy.sql.expression import text
@@ -86,5 +90,12 @@ class Client(Base):
     user = relationship("User")
     inbound = relationship("Inbound")
 
-    def __str__(self):
-        return self.user + self.inbound
+
+class ClientUsage(Base):
+    __tablename__ = "clients_usage"
+    id = Column(Integer, nullable=False, primary_key=True)
+    time = Column(DateTime, nullable=False)
+    usage = Column(Float, nullable=False)
+    last_usage = Column(Float, nullable=False)
+    client_id = Column(ForeignKey("clients.id", ondelete="CASCADE"), nullable=False)
+    client = relationship("Client")

@@ -16,3 +16,6 @@ class InboundAdmin(ModelView, model=models.Inbound):
 
 class ClientAdmin(ModelView, model=models.Client):
     pass
+
+class ClientUsageAdmin(ModelView, model=models.ClientUsage):
+    pass

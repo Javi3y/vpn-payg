@@ -58,7 +58,7 @@ async def create_client(
             tgid=current_user.tgid,
             limit=gb_b_converter(
                 (current_user.balance / inbound.price)
-                if current_user.balance > 0
+                if current_user.balance > 5000
                 else 0.001
             ),
         )
@@ -82,15 +82,17 @@ async def create_client(
             tgid=current_user.tgid,
             limit=gb_b_converter(
                 (current_user.balance / inbound.price)
-                if current_user.balance > 0
+                if current_user.balance > 5000
                 else 0.001
             ),
         )
         new_client = models.Client(
-            email= inbound.remark + " - " + current_user.username ,password=password, user_id=current_user.id, inbound_id=inbound.id
+            email=inbound.remark + " - " + current_user.username,
+            password=password,
+            user_id=current_user.id,
+            inbound_id=inbound.id,
         )
 
-    
     db.add(new_client)
     await db.commit()
     await db.refresh(new_client)
@@ -148,3 +150,14 @@ async def get_clients(
     return check_client
 
 
+@router.get("/{client_id}/usage")
+async def get_client_usage(
+    client_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    usage = await db.execute(
+        select(models.ClientUsage).where(models.ClientUsage.client_id == client_id)
+    )
+    usage = usage.scalars().all()
+    return usage

@@ -17,7 +17,7 @@ from starlette.status import (
     HTTP_401_UNAUTHORIZED,
 )
 from sqladmin import Admin
-from .admin.views import ClientAdmin, UserAdmin, InboundAdmin
+from .admin.views import ClientAdmin, ClientUsageAdmin, UserAdmin, InboundAdmin
 
 from .database import get_db, engine
 from .admin.admin import authentication_backend
@@ -32,6 +32,7 @@ admin = Admin(app, engine, authentication_backend=authentication_backend)
 admin.add_view(UserAdmin)
 admin.add_view(InboundAdmin)
 admin.add_view(ClientAdmin)
+admin.add_view(ClientUsageAdmin)
 
 origins = ["*"]
 
@@ -66,4 +67,3 @@ async def login(
     access_token = await create_access_token(data={"user_id": user.id})
 
     return {"access_token": access_token, "token_type": "bearer"}
-

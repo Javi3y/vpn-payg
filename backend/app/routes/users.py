@@ -24,9 +24,14 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 async def get_profile(current_user: int = Depends(get_current_user)):
     return current_user
 
+
 @router.post("/balance")
-async def add_balance(amount: int,current_user: int = Depends(get_current_user),db: Session = Depends(get_db)):
-   current_user.balance = current_user.balance + amount 
-   await db.commit()
-   await db.refresh(current_user)
-   return current_user.balance
+async def add_balance(
+    amount: int,
+    current_user: int = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    current_user.balance = current_user.balance + amount
+    await db.commit()
+    await db.refresh(current_user)
+    return current_user.balance

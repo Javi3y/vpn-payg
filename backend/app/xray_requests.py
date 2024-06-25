@@ -218,7 +218,16 @@ async def get_client_usage(session, host, email):
     return result
 
 
-async def disable_client(session, host, inbound_id, protocol, uuid=None, password=None):
+async def update_client(
+    session,
+    host,
+    inbound_id,
+    protocol,
+    enable,
+    limit,
+    uuid=None,
+    password=None,
+):
     result = ""
     tries = 0
     while not result and tries < API_TRIES:
@@ -238,13 +247,13 @@ async def disable_client(session, host, inbound_id, protocol, uuid=None, passwor
                         {
                             "email": client_conf["email"],
                             client_key: client_id,
-                            "enable": False,
+                            "enable": enable,
                             "expiryTime": 0,
                             "flow": "",
                             "limitIp": 0,
                             "reset": 0,
                             "tgId": client_conf["tgId"],
-                            "totalGB": 1
+                            "totalGB": limit,
                         }
                     ]
                 }
@@ -253,16 +262,16 @@ async def disable_client(session, host, inbound_id, protocol, uuid=None, passwor
                 clients = str(clients).replace("True", "true")
                 headers = {"id": inbound_id, "settings": clients}
                 response = await client.post(
-                   host + f"/panel/api/inbounds/updateClient/{client_id}",
-                   json=headers,
-                   timeout=BACK_OFF,
+                    host + f"/panel/api/inbounds/updateClient/{client_id}",
+                    json=headers,
+                    timeout=BACK_OFF,
                 )
                 json_response = json.loads(response.text)
                 if not json_response["success"]:
-                        # if json_response["msg"].startswith("Invalid username"):
-                        #    raise HTTPException(
-                        #        status_code=HTTP_401_UNAUTHORIZED, detail=json_response
-                        #    )
+                    # if json_response["msg"].startswith("Invalid username"):
+                    #    raise HTTPException(
+                    #        status_code=HTTP_401_UNAUTHORIZED, detail=json_response
+                    #    )
                     raise HTTPException(
                         status_code=HTTP_400_BAD_REQUEST, detail=json_response
                     )
@@ -273,3 +282,31 @@ async def disable_client(session, host, inbound_id, protocol, uuid=None, passwor
                 if tries >= API_TRIES:
                     raise e
     return result
+
+
+async def disable_client(session, host, inbound_id, protocol, uuid=None, password=None):
+    return await update_client(
+        session,
+        host,
+        inbound_id,
+        protocol,
+        uuid=uuid,
+        password=password,
+        enable=False,
+        limit=1,
+    )
+
+
+async def update_client_limit(
+    session, host, inbound_id, protocol, limit, uuid=None, password=None
+):
+    return await update_client(
+        session,
+        host,
+        inbound_id,
+        protocol,
+        uuid=uuid,
+        password=password,
+        enable=True,
+        limit=limit,
+    )

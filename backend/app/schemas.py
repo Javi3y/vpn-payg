@@ -1,10 +1,17 @@
 from enum import Enum
-from typing import Optional
-from pydantic import UUID4, BaseModel, EmailStr, HttpUrl,computed_field
+import inspect
+from typing import Annotated, Optional, no_type_check
+from pydantic import (
+    UUID4,
+    BaseModel,
+    EmailStr,
+    HttpUrl,
+    PrivateAttr,
+    computed_field,
+    Field,
+)
 
 from app.xray_requests import b_gb_converter
- 
-
 
 # token
 
@@ -95,9 +102,3 @@ class ClientOut(Client):
     uuid: Optional[UUID4]
     password: Optional[str]
     usage: float
-
-    @computed_field
-    @property
-    def usageGb(self) -> int:
-        return b_gb_converter(self.usage)
-

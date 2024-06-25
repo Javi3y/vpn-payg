@@ -1,6 +1,7 @@
+import datetime
 from sqlalchemy import select
 from app.database import get_db
-from app.models import Inbound, Client, User
+from app import models
 from app.xray_requests import (
     b_gb_converter,
     disable_client,
@@ -12,7 +13,7 @@ from app.xray_requests import (
 async def update_session():
     db_generator = get_db()
     db = await anext(db_generator)
-    results = await db.execute(select(Inbound))
+    results = await db.execute(select(models.Inbound))
     inbounds = results.scalars().all()
     for inbound in inbounds:
         inbound.session_token = await get_token(
@@ -24,17 +25,19 @@ async def update_session():
 async def update_balance():
     db_generator = get_db()
     db = await anext(db_generator)
-    results = await db.execute(select(Inbound))
+    results = await db.execute(select(models.Inbound))
     inbounds = results.scalars().all()
     for inbound in inbounds:
         clients = await db.execute(
-            select(Client)
-            .where(Client.inbound_id == inbound.id)
-            .where(Client.disabled == False)
+            select(models.Client)
+            .where(models.Client.inbound_id == inbound.id)
+            .where(models.Client.disabled == False)
         )
         clients = clients.scalars().all()
         for client in clients:
-            user = await db.execute(select(User).where(User.id == client.user_id))
+            user = await db.execute(
+                select(models.User).where(models.User.id == client.user_id)
+            )
             user = user.scalar()
             usage = await get_client_usage(
                 inbound.session_token, inbound.host, client.email
@@ -70,7 +73,7 @@ async def update_balance():
 
             if user.balance <= 5000:
                 disabling_clients = await db.execute(
-                    select(Client).where(Client.user_id == user.id)
+                    select(models.Client).where(models.Client.user_id == user.id)
                 )
                 for disabling_client in disabling_clients.scalars().all():
                     await disable_client(
@@ -85,3 +88,43 @@ async def update_balance():
                     await db.refresh(user)
                     await db.refresh(client)
                     await db.refresh(inbound)
+
+
+async def update_usage():
+    db_generator = get_db()
+    db = await anext(db_generator)
+    results = await db.execute(select(models.Inbound))
+    inbounds = results.scalars().all()
+    for inbound in inbounds:
+        clients = await db.execute(
+            select(models.Client).where(models.Client.inbound_id == inbound.id)
+        )
+        clients = clients.scalars().all()
+        for client in clients:
+            client_usage = await db.execute(
+                select(models.ClientUsage)
+                .where(models.ClientUsage.client_id == client.id)
+                .order_by(models.ClientUsage.time.desc())
+            )
+            client_usage = client_usage.scalars().first()
+            last_usage = client.usage
+            if client_usage:
+                usage = last_usage - client_usage.last_usage
+                new_usage = models.ClientUsage(
+                    time=datetime.datetime.now(),
+                    usage=usage,
+                    last_usage=last_usage,
+                    client_id=client.id,
+                )
+            else:
+                new_usage = models.ClientUsage(
+                    time=datetime.datetime.now(),
+                    usage=last_usage,
+                    last_usage=0,
+                    client_id=client.id,
+                )
+            db.add(new_usage)
+
+            await db.commit()
+            await db.refresh(client)
+            await db.refresh(new_usage)
