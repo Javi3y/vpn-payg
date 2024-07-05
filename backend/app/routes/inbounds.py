@@ -8,12 +8,15 @@ from app.database import get_db
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.xray_requests import (
-    create_inbound_client,
+    b_gb_converter,
     delete_inbound_client,
     gb_b_converter,
+    get_client_balance,
     get_inbound_clients,
     get_inbound_protocol,
     get_token,
+    reset_usage,
+    update_client_limit,
 )
 from starlette.status import (
     HTTP_204_NO_CONTENT,
@@ -76,6 +79,44 @@ async def create_inbound(
                         user_id=user.id,
                         inbound_id=new_inbound.id,
                     )
+                    balance = await get_client_balance(
+                        new_inbound.session_token, new_inbound.host, client["email"]
+                    )
+                    balance = b_gb_converter(balance)
+                    ubalance = balance * inbound.price
+                    user.balance = user.balance + ubalance
+                    print("yes")
+                    await db.commit()
+                    await db.refresh(user)
+                    await db.refresh(new_inbound)
+                    print("yes")
+                    await reset_usage(
+                        new_inbound.session_token,
+                        new_inbound.host,
+                        new_inbound.inbound_id,
+                        client["email"],
+                    )
+                    uuid = (
+                        None if (new_inbound.protocol == "trojan") else client["uuid"]
+                    )
+                    password = (
+                        None
+                        if (new_inbound.protocol == "vless")
+                        else client["password"]
+                    )
+                    print(user.balance)
+                    print(new_inbound.price)
+                    print(user.balance / new_inbound.price)
+                    await update_client_limit(
+                        session=new_inbound.session_token,
+                        host=new_inbound.host,
+                        inbound_id=new_inbound.inbound_id,
+                        limit=int(gb_b_converter(user.balance / new_inbound.price)),
+                        protocol=new_inbound.protocol,
+                        uuid=uuid,
+                        password=password,
+                    )
+
                     db.add(new_client)
                     await db.commit()
 

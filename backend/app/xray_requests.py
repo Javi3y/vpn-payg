@@ -192,7 +192,7 @@ async def delete_inbound_client(
     return result
 
 
-async def get_client_usage(session, host, email):
+async def get_client(session, host, email):
     result = ""
     tries = 0
     while result == "" and tries < API_TRIES:
@@ -207,14 +207,24 @@ async def get_client_usage(session, host, email):
                     raise HTTPException(
                         status_code=HTTP_400_BAD_REQUEST, detail=json_response
                     )
-                obj = json_response["obj"]
-                result = int(obj["down"]) + int(obj["up"])
-
+                result = json_response["obj"]
             except Exception as e:
                 print(str(e))
                 tries += 1
                 if tries >= API_TRIES:
                     raise e
+    return result
+
+
+async def get_client_usage(session, host, email):
+    obj = await get_client(session, host, email)
+    result = int(obj["down"]) + int(obj["up"])
+    return result
+
+
+async def get_client_balance(session, host, email):
+    obj = await get_client(session, host, email)
+    result = int(obj["total"]) - (int(obj["down"]) + int(obj["up"]))
     return result
 
 
@@ -310,3 +320,30 @@ async def update_client_limit(
         enable=True,
         limit=limit,
     )
+
+
+async def reset_usage(session, host, inbound_id, email):
+    result = ""
+    tries = 0
+    url = f"{host}/panel/api/inbounds/{inbound_id}/resetClientTraffic/{email}"
+    while not result and tries < API_TRIES:
+        async with AsyncClient(cookies={"session": session}) as client:
+            try:
+                response = await client.post(url, timeout=BACK_OFF)
+
+                json_response = json.loads(response.text)
+                if not json_response["success"]:
+                    if json_response["msg"].startswith("Obtain Failed"):
+                        raise HTTPException(
+                            status_code=HTTP_404_NOT_FOUND, detail=json_response
+                        )
+                    raise HTTPException(
+                        status_code=HTTP_400_BAD_REQUEST, detail=json_response
+                    )
+                result = json_response
+            except Exception as e:
+                print(str(e))
+                tries += 1
+                if tries >= API_TRIES:
+                    raise e
+    return result
