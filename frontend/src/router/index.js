@@ -6,6 +6,7 @@ import Logout from '@/views/Logout.vue'
 import InboundsView from '@/views/InboundsView.vue'
 import InboundView from '@/views/InboundView.vue'
 import BalanceView from '@/views/BalanceView.vue'
+import ClientHistoryView from '@/views/ClientHistoryView.vue'
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
@@ -28,6 +29,11 @@ const router = createRouter({
 					path: 'inbound/:id',
 					name: 'inbound',
 					component: InboundView
+				},
+				{
+					path: 'clientHistory/:id',
+					name: 'clientHistory',
+					component: ClientHistoryView
 				},
 				{
 					path: 'balance',
