@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
 import HomeView from '@/views/HomeView.vue'
 import Page from '@/views/Page.vue'
 import Logout from '@/views/Logout.vue'
@@ -14,6 +15,7 @@ const router = createRouter({
 			path: '/',
 			name: 'home',
 			component: Page,
+			meta: { reload: true },
 			children: [
 				{
 					path: '',
@@ -51,6 +53,11 @@ const router = createRouter({
 			path: '/logout',
 			name: 'logout',
 			component: Logout
+		},
+		{
+			path: '/register',
+			name: 'register',
+			component: Register
 		}
 	]
 })

@@ -4,7 +4,7 @@ import Client from '@/components/Client.vue'
 </script>
 <template>
   <div class="grid grid-cols-2 gap-2" v-if="user">
-    <Fieldset legend="Header">
+    <Fieldset legend="User">
       <h2>Username:</h2>
       <h3 class="pl-4">{{ user.username }}</h3>
       <h2>Balance:</h2>

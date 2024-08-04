@@ -16,10 +16,12 @@ async def update_session():
     results = await db.execute(select(models.Inbound))
     inbounds = results.scalars().all()
     for inbound in inbounds:
+        await db.refresh(inbound)
         inbound.session_token = await get_token(
             inbound.username, inbound.host, inbound.password
         )
         await db.commit()
+        await db.refresh(inbound)
 
 
 async def update_balance():
@@ -28,6 +30,7 @@ async def update_balance():
     results = await db.execute(select(models.Inbound))
     inbounds = results.scalars().all()
     for inbound in inbounds:
+        await db.refresh(inbound)
         clients = await db.execute(
             select(models.Client)
             .where(models.Client.inbound_id == inbound.id)
@@ -35,6 +38,7 @@ async def update_balance():
         )
         clients = clients.scalars().all()
         for client in clients:
+            await db.refresh(client)
             user = await db.execute(
                 select(models.User).where(models.User.id == client.user_id)
             )
@@ -89,6 +93,10 @@ async def update_balance():
                     await db.refresh(client)
                     await db.refresh(inbound)
 
+            await db.refresh(user)
+            await db.refresh(client)
+            await db.refresh(inbound)
+
 
 async def update_usage():
     db_generator = get_db()
@@ -96,11 +104,13 @@ async def update_usage():
     results = await db.execute(select(models.Inbound))
     inbounds = results.scalars().all()
     for inbound in inbounds:
+        await db.refresh(inbound)
         clients = await db.execute(
             select(models.Client).where(models.Client.inbound_id == inbound.id)
         )
         clients = clients.scalars().all()
         for client in clients:
+            await db.refresh(client)
             client_usage = await db.execute(
                 select(models.ClientUsage)
                 .where(models.ClientUsage.client_id == client.id)
@@ -128,3 +138,4 @@ async def update_usage():
             await db.commit()
             await db.refresh(client)
             await db.refresh(new_usage)
+            await db.refresh(inbound)

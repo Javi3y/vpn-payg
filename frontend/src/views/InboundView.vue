@@ -8,7 +8,9 @@ import Button from 'primevue/button'
     <p>price: {{ inbound.price }}</p>
     <p>protocol: {{ inbound.protocol.value }}</p>
     <div v-if="client">
-      <p>client: {{ client }}</p>
+    <RouterLink class="green" :to="`/clientHistory/${client.id}`">
+      client: {{ client }}
+    </RouterLink>
       <form @submit.prevent="deleteClient">
         <Button type="submit" label="Delete Client" text />
       </form>

@@ -45,6 +45,7 @@ async def create_client(
     check_client = check_client.scalar()
     if check_client:
         raise HTTPException(HTTP_409_CONFLICT, detail="client already exist")
+
     if inbound.protocol == "vless":
         uuid = str(uuid4())
         created_client = await create_inbound_client(
@@ -64,7 +65,10 @@ async def create_client(
         )
 
         new_client = models.Client(
-            uuid=uuid, user_id=current_user.id, inbound_id=inbound.id
+            uuid=uuid,
+            user_id=current_user.id,
+            inbound_id=inbound.id,
+            email=inbound.remark + " - " + current_user.username,
         )
     elif inbound.protocol == "trojan":
         password = "".join(
