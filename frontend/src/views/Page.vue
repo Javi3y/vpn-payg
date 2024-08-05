@@ -38,10 +38,11 @@ import { RouterLink, RouterView } from 'vue-router'
 import axios from 'axios'
 export default {
 	async created() {
-		console.log(this.$router)
 		try {
 			const response = await axios.get('users/profile')
 			this.user = response.data
+			if (!(response.status == "200" && this.user)){this.$router.push("/login")
+			}
 		} catch (error) {
 			console.error(error)
 		}
