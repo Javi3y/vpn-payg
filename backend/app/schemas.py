@@ -1,17 +1,13 @@
 from enum import Enum
-import inspect
-from typing import Annotated, Optional, Union, no_type_check
+from typing import Optional, Union
 from pydantic import (
     UUID4,
     BaseModel,
     EmailStr,
 )
-from sqlalchemy_utils.types import password
 
-from app.xray_requests import b_gb_converter
 
 # token
-
 
 class Token(BaseModel):
     access_token: str
@@ -88,6 +84,16 @@ class InboundIn(Inbound):
 class InboundOut(Inbound):
     id: int
     protocol: Protocol
+
+class InboundUpdate(BaseModel):
+    remark: Union[str,None] = None
+    price: Union[int,None] = None
+    detail: Union[str,None] = None
+    username: Union[str, None] = None
+    password: Union[str, None] = None
+    host: Union[str, None] = None
+    inbound_id: Union[int, None] = None
+    base_link: Union[str, None] = None
 
 
 # Clients

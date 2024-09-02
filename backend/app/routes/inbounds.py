@@ -181,3 +181,35 @@ async def delete_inbound(
     await db.delete(inbound)
     await db.commit()
     return Response(status_code=HTTP_204_NO_CONTENT)
+
+
+@router.patch("/{id}")
+async def update_inbound(
+    id: int,
+    updated_inbound: schemas.InboundUpdate,
+    db: Session = Depends(get_db),
+    current_user: int = Depends(get_current_user),
+):
+    if not current_user.is_supper_user:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN, detail="user isn't user user"
+        )
+    inbound = await db.execute(select(models.Inbound).where(models.Inbound.id == id))
+    inbound = inbound.scalar()
+    if not inbound:
+        raise HTTPException(HTTP_404_NOT_FOUND, detail="inbound does not exist")
+
+    inbound_dict = updated_inbound.model_dump(exclude_unset=True)
+    for key, value in inbound_dict.items():
+        setattr(inbound, key, value)
+    await db.commit()
+    await db.refresh(inbound)
+    session_token = await get_token(
+        inbound.username, inbound.host, inbound.password
+    )
+    setattr(inbound, "session_token",session_token)
+    await db.commit()
+    await db.refresh(inbound)
+    return Response(status_code=HTTP_204_NO_CONTENT)
+
+
