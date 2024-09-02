@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter
 from sqlalchemy import select
 from app import models, schemas
@@ -8,6 +8,7 @@ from app.database import get_db
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session, selectinload
 from starlette.status import (
+    HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
 )
 
@@ -37,19 +38,36 @@ async def get_users(
     return users.scalars().all()
 
 
+@router.patch("/{id}", response_model=schemas.UserOut)
 @router.patch("/", response_model=schemas.UserOut)
 async def update_user(
     updated_user: schemas.UserUpdate,
+    id: Optional[int] = None,
     current_user: int = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    user_dict = updated_user.model_dump(exclude_unset=True)
+    if id:
+        if not current_user.is_supper_user:
+            raise HTTPException(
+                status_code=HTTP_403_FORBIDDEN, detail="user isn't super user"
+            )
+        user = await db.execute(select(models.User).where(models.User.id == id))
+        user = user.scalar()
+        if not user:
+            raise HTTPException(HTTP_404_NOT_FOUND, detail="user does not exist")
+    else:
+        user = current_user
+        updated_user.balance = None
+
+    user_dict = updated_user.model_dump(exclude_none=True)
     print(user_dict)
+
     for key, value in user_dict.items():
-        setattr(current_user, key, value)
+        setattr(user, key, value)
+
     await db.commit()
-    await db.refresh(current_user)
-    return current_user
+    await db.refresh(user)
+    return user
 
 
 @router.get("/profile", response_model=schemas.UserOut)
@@ -111,6 +129,7 @@ async def add_balance(
                 limit=limit,
             )
     return current_user.balance
+
 
 @router.get("/balance")
 async def get_client_usage(

@@ -154,14 +154,14 @@ async def get_clients(
     return check_client
 
 
-@router.get("/{client_id}/usage")
+@router.get("/{id}/usage")
 async def get_client_usage(
-    client_id: int,
+    id: int,
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     usage = await db.execute(
-        select(models.ClientUsage).where(models.ClientUsage.client_id == client_id)
+        select(models.ClientUsage).where(models.ClientUsage.client_id == id)
     )
     usage = usage.scalars().all()
     return usage

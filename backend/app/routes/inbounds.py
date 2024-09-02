@@ -183,7 +183,7 @@ async def delete_inbound(
     return Response(status_code=HTTP_204_NO_CONTENT)
 
 
-@router.patch("/{id}")
+@router.patch("/{id}", response_model=schemas.InboundOut)
 async def update_inbound(
     id: int,
     updated_inbound: schemas.InboundUpdate,
@@ -210,6 +210,6 @@ async def update_inbound(
     setattr(inbound, "session_token",session_token)
     await db.commit()
     await db.refresh(inbound)
-    return Response(status_code=HTTP_204_NO_CONTENT)
+    return inbound
 
 

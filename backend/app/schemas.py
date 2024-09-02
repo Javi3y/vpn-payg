@@ -9,6 +9,7 @@ from pydantic import (
 
 # token
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -44,13 +45,13 @@ class UserOut(User):
 class UserLogin(User):
     password: str
 
+
 class UserUpdate(BaseModel):
     username: Union[str, None] = None
     password: Union[str, None] = None
     uuid: Union[UUID4, None] = None
     tgid: Union[str, None] = None
-    
-
+    balance: Union[float, None] = None
 
 
 # inbound
@@ -85,10 +86,11 @@ class InboundOut(Inbound):
     id: int
     protocol: Protocol
 
+
 class InboundUpdate(BaseModel):
-    remark: Union[str,None] = None
-    price: Union[int,None] = None
-    detail: Union[str,None] = None
+    remark: Union[str, None] = None
+    price: Union[int, None] = None
+    detail: Union[str, None] = None
     username: Union[str, None] = None
     password: Union[str, None] = None
     host: Union[str, None] = None
