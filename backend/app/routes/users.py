@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter
 from sqlalchemy import select
 from app import models, schemas
@@ -23,9 +24,42 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return {"user": new_user.email}
 
 
+@router.get("/", response_model=List[schemas.UserOut])
+async def get_users(
+    current_user: int = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    if not current_user.is_supper_user:
+        raise HTTPException(
+            status_code=HTTP_403_FORBIDDEN, detail="user isn't user user"
+        )
+    users = await db.execute(select(models.User))
+    return users.scalars().all()
+
+
+@router.patch("/", response_model=schemas.UserOut)
+async def update_user(
+    updated_user: schemas.UserUpdate,
+    current_user: int = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    user_dict = updated_user.model_dump(exclude_unset=True)
+    print(user_dict)
+    for key, value in user_dict.items():
+        setattr(current_user, key, value)
+    print(current_user)
+    await db.commit()
+    await db.refresh(current_user)
+    return current_user
+
+
 @router.get("/profile", response_model=schemas.UserOut)
 async def get_profile(current_user: int = Depends(get_current_user)):
     return current_user
+
+
+@router.get("/is_admin")
+async def is_admin(current_user: int = Depends(get_current_user)):
+    return current_user.is_supper_user
 
 
 @router.post("/balance")

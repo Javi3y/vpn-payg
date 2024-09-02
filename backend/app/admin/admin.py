@@ -4,7 +4,7 @@ from sqlalchemy import select
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
 
 from app.database import get_db
-from app.auth import create_access_token, verity_access_token
+from app.auth import create_access_token, verify_access_token
 from app import models
 from app.config import settings
 
@@ -59,7 +59,7 @@ class AdminAuth(AuthenticationBackend):
             headers={"www-Authenticate": "Bearer"},
         )
 
-        user_token = await verity_access_token(token, credentials_exception)
+        user_token = await verify_access_token(token, credentials_exception)
         db_generator = get_db()
         db = await anext(db_generator)
         user = await db.execute(

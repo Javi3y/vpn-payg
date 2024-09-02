@@ -86,6 +86,7 @@ async def update_balance():
                         inbound.inbound_id,
                         inbound.protocol,
                         password=disabling_client.password,
+                        uuid=disabling_client.uuid,
                     )
                     disabling_client.disabled = True
                     await db.commit()

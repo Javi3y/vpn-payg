@@ -38,7 +38,7 @@ import { useRoute } from 'vue-router'
     </template>
   </Menubar>
   <div class="m-4 p-4">
-    <router-view :user="user" :key="$router.fullPath"></router-view>
+    <router-view :key="$router.fullPath"></router-view>
   </div>
 </template>
 <script>
@@ -49,12 +49,8 @@ export default {
       const response = await axios.get('users/profile')
       this.user = response.data
       const adminResponse = await axios.get('users/is_admin')
-      if (adminResponse.data) {
-        this.items.push({
-          label: 'admin',
-          icon: 'pi pi-user-plus',
-          url: '/admin'
-        })
+      if (!adminResponse.data) {
+      this.$router.push('/')
       }
     } catch (error) {
       //this.$router.push('/login')
@@ -71,9 +67,9 @@ export default {
           url: '/'
         },
         {
-          label: 'inbounds',
-          icon: 'pi pi-server',
-          url: '/inbounds'
+          label: 'users',
+          icon: 'pi pi-users',
+          url: '/admin/users'
         }
       ]
     }

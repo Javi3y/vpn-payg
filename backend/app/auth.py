@@ -31,7 +31,7 @@ async def create_access_token(data: dict):
     return encoded
 
 
-async def verity_access_token(token: str, credentials_exception):
+async def verify_access_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token, SECRET_KEY, ALGORITHM)
         id: str = payload.get("user_id")
@@ -54,7 +54,7 @@ async def get_current_user(
         detail=f"Could not validate credentials",
         headers={"www-Authenticate": "Bearer"},
     )
-    user_token = await verity_access_token(token, credentials_exception)
+    user_token = await verify_access_token(token, credentials_exception)
     results = await db.execute(
         select(models.User).where(models.User.id == user_token.id)
     )

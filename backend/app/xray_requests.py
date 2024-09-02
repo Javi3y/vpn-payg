@@ -244,7 +244,7 @@ async def update_client(
         async with AsyncClient(cookies={"session": session}) as client:
             try:
                 if protocol == "vless":
-                    client_id = uuid
+                    client_id = str(uuid)
                     client_key = "id"
                 elif protocol == "trojan":
                     client_id = password

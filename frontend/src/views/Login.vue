@@ -49,7 +49,8 @@ export default {
 				const response = await axios.post('login', params)
 				console.log("yes")
 				localStorage.setItem('token', response.data.access_token)
-				this.$router.push('/')
+				//this.$router.push('/')
+				this.$router.push({ path: '/', hash: '#' })
 			} catch (error) {
 				console.error(error)
 			}

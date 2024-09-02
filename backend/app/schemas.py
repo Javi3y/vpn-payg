@@ -1,15 +1,12 @@
 from enum import Enum
 import inspect
-from typing import Annotated, Optional, no_type_check
+from typing import Annotated, Optional, Union, no_type_check
 from pydantic import (
     UUID4,
     BaseModel,
     EmailStr,
-    HttpUrl,
-    PrivateAttr,
-    computed_field,
-    Field,
 )
+from sqlalchemy_utils.types import password
 
 from app.xray_requests import b_gb_converter
 
@@ -50,6 +47,14 @@ class UserOut(User):
 
 class UserLogin(User):
     password: str
+
+class UserUpdate(BaseModel):
+    username: Union[str, None] = None
+    password: Union[str, None] = None
+    uuid: Union[UUID4, None] = None
+    tgid: Union[str, None] = None
+    
+
 
 
 # inbound
