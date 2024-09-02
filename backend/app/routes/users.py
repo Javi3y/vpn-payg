@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 from fastapi import APIRouter
 from sqlalchemy import select
@@ -46,7 +47,6 @@ async def update_user(
     print(user_dict)
     for key, value in user_dict.items():
         setattr(current_user, key, value)
-    print(current_user)
     await db.commit()
     await db.refresh(current_user)
     return current_user
@@ -68,10 +68,19 @@ async def add_balance(
     current_user: int = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    amount = current_user.balance + amount
-    current_user.balance = amount
+    new_amount = current_user.balance + amount
+    current_user.balance = new_amount
     await db.commit()
     await db.refresh(current_user)
+
+    user_balance = models.UserBalance(
+        balance=amount, time=datetime.datetime.now(), user_id=current_user.id
+    )
+    db.add(user_balance)
+    await db.commit()
+    await db.refresh(user_balance)
+    await db.refresh(current_user)
+
     clients = await db.execute(
         select(models.Client)
         .where(models.Client.user_id == current_user.id)
@@ -102,3 +111,14 @@ async def add_balance(
                 limit=limit,
             )
     return current_user.balance
+
+@router.get("/balance")
+async def get_client_usage(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    usage = await db.execute(
+        select(models.UserBalance).where(models.UserBalance.user_id == current_user.id)
+    )
+    usage = usage.scalars().all()
+    return usage

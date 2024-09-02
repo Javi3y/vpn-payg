@@ -11,9 +11,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
-    Time,
     UniqueConstraint,
-    func,
 )
 from sqlalchemy_utils import ChoiceType, EmailType, PasswordType, URLType, UUIDType
 from sqlalchemy.sql.expression import text
@@ -44,6 +42,15 @@ class User(Base):
 
     def __str__(self):
         return self.username
+
+
+class UserBalance(Base):
+    __tablename__ = "user_balances"
+    id = Column(Integer, nullable=False, primary_key=True)
+    time = Column(DateTime, nullable=False)
+    balance = Column(Float, nullable=False)
+    user_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user = relationship("User")
 
 
 class Inbound(Base):
